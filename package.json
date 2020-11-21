@@ -1,0 +1,32 @@
+{
+  "name": "web-deploy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "web deploy",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/main.ts --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamKirkland/web-deploy.git"
+  },
+  "keywords": [
+    "website deploy",
+    "continuous integration",
+    "sftp",
+    "ssh",
+    "rsync"
+  ],
+  "author": "Sam Kirkland",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "12.12.8",
+    "@vercel/ncc": "^0.25.1",
+    "typescript": "^4.1.2"
+  }
+}

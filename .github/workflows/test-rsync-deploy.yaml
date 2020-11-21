@@ -1,0 +1,15 @@
+on: push
+name: Test FTP Deploy
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.1.0
+    - name: FTP-Deploy-Action
+      uses: SamKirkland/FTP-Deploy-Action@master
+      with:
+        target-server: samkirkland.com
+        destination-path: rsync-deploy-action.samkirkland.com/
+        remote-user: ${{ secrets.user }}
+        remote-key: ${{ secrets.pass }}
