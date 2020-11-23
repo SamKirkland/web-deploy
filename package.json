@@ -5,7 +5,8 @@
   "description": "web deploy",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/main.ts --no-cache"
+    "build": "ncc build src/main.ts --no-cache",
+    "deploy": "npm run build && node ./dist/index.js --target-server samkirkland.com --remote-user \"sshUser\" --remote-key \"sshPassword\" --source-path ./ --destination-path rsync-target/"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,8 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4"
+    "@actions/exec": "^1.0.4",
+    "command-exists": "^1.2.9"
   },
   "devDependencies": {
     "@types/node": "12.12.8",
