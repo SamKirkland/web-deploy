@@ -1,3 +1,7 @@
+:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
+### This package has not been released yet. Feel free to test it out but at your own risk
+:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
+
 <p align="center">
   <img alt="web deploy - Continuous integration for everyone" src="images/web-deploy-logo-small.png">
 </p>
