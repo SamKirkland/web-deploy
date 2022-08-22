@@ -1,29 +1,29 @@
-name: 'web deploy'
-description: 'Deploy websites via sftp/ssh'
-author: 'Sam Kirkland'
+name: "web deploy"
+description: "Deploy websites via sftp/ssh"
+author: "Sam Kirkland"
 inputs:
   target-server:
-    description: 'eployment destination server. Formatted as domain.com:port. Port is optional, when not specified it will default to 22'
+    description: "Deployment destination server. Formatted as domain.com:port. Port is optional, when not specified it will default to 22"
     required: true
   remote-user:
-    description: 'SSH account username'
+    description: "SSH account username"
     required: true
   remote-key:
-    description: 'SSH account password'
+    description: "SSH account password"
     required: true
   source-path:
-    description: 'Path to upload to on the server, must end with trailing slash /'
+    description: "Path to upload to on the server, must end with trailing slash /"
     required: true
   destination-path:
-    description: 'Folder to upload from, must end with trailing slash /'
+    description: "Folder to upload from, must end with trailing slash /"
     required: true
   rsync-options:
-    description: 'Passes through options into rsync'
-    default: 
+    description: "Passes through options into rsync"
+    default:
     required: false
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
 branding:
-  icon: 'upload-cloud'
-  color: 'blue'
+  icon: "upload-cloud"
+  color: "blue"

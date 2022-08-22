@@ -25,7 +25,6 @@ jobs:
       uses: SamKirkland/web-deploy@v1.0.0
       with:
         target-server: samkirkland.com
-        port: 22
         username: myFtpUserName
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         args: 

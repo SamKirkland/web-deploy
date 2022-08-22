@@ -4142,7 +4142,6 @@ run();
 function getUserArguments() {
     return {
         target_server: (0, core_1.getInput)("target-server", { required: true }),
-        port: (0, core_1.getInput)("port", { required: false }),
         destination_path: withDefault((0, core_1.getInput)("destination-path", { required: false }), "./"),
         remote_user: (0, core_1.getInput)("remote-user", { required: true }),
         remote_key: (0, core_1.getInput)("remote-key", { required: true }),
@@ -4162,7 +4161,7 @@ function withDefault(value, defaultValue) {
 async function syncFiles(args) {
     try {
         await (0, core_1.group)("Uploading files", async () => {
-            const destination = `${args.remote_user}${args.port !== undefined ? `:${args.port}` : ""}@${args.target_server}:${args.destination_path}`;
+            const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
             const rsyncArguments = args.rsync_options.split(" ");
             if (args.source_path !== undefined) {
                 rsyncArguments.push(args.source_path);
