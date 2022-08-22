@@ -25,6 +25,7 @@ run();
 function getUserArguments(): IActionArguments {
   return {
     target_server: getInput("target-server", { required: true }),
+    port: getInput("port", { required: false }),
     destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
     remote_user: getInput("remote-user", { required: true }),
     remote_key: getInput("remote-key", { required: true }),
@@ -47,15 +48,19 @@ function withDefault(value: string, defaultValue: string) {
 async function syncFiles(args: IActionArguments) {
   try {
     await group("Uploading files", async () => {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+      const destination = `${args.remote_user}${args.port !== undefined ? `:${args.port}` : ""}@${args.target_server}:${args.destination_path}`;
+
+      const rsyncArguments: string[] = args.rsync_options.split(" ");
+
+      if (args.source_path !== undefined) {
+        rsyncArguments.push(args.source_path);
+      }
+
+      rsyncArguments.push(destination);
 
       return await exec(
         "rsync",
-        [
-          ...args.rsync_options.split(" "),
-          args.source_path,
-          destination
-        ],
+        rsyncArguments,
         {
           listeners: {
             stdout: (data: Buffer) => {

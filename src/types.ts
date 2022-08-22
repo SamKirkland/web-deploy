@@ -1,6 +1,7 @@
 export interface IActionArguments {
     target_server: string;
-    source_path: string;
+    port: string | undefined;
+    source_path: string | undefined;
     destination_path: string;
     remote_user: string;
     remote_key: string;
