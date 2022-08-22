@@ -4118,35 +4118,12 @@ exports["default"] = _default;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(186));
-const exec = __importStar(__nccwpck_require__(514));
+const core_1 = __nccwpck_require__(186);
+const exec_1 = __nccwpck_require__(514);
 const command_exists_1 = __importDefault(__nccwpck_require__(724));
 const errorDeploying = "⚠️ Error deploying";
 async function run() {
@@ -4158,18 +4135,18 @@ async function run() {
     }
     catch (error) {
         console.error(errorDeploying);
-        core.setFailed(error);
+        (0, core_1.setFailed)(error);
     }
 }
 run();
 function getUserArguments() {
     return {
-        target_server: core.getInput("target-server", { required: true }),
-        destination_path: withDefault(core.getInput("destination-path", { required: false }), "./"),
-        remote_user: core.getInput("remote-user", { required: true }),
-        remote_key: core.getInput("remote-key", { required: true }),
-        source_path: withDefault(core.getInput("source-path", { required: false }), "./"),
-        rsync_options: withDefault(core.getInput("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+        target_server: (0, core_1.getInput)("target-server", { required: true }),
+        destination_path: withDefault((0, core_1.getInput)("destination-path", { required: false }), "./"),
+        remote_user: (0, core_1.getInput)("remote-user", { required: true }),
+        remote_key: (0, core_1.getInput)("remote-key", { required: true }),
+        source_path: withDefault((0, core_1.getInput)("source-path", { required: false }), "./"),
+        rsync_options: withDefault((0, core_1.getInput)("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
     };
 }
 function withDefault(value, defaultValue) {
@@ -4183,10 +4160,10 @@ function withDefault(value, defaultValue) {
  */
 async function syncFiles(args) {
     try {
-        await core.group("Uploading files", async () => {
+        await (0, core_1.group)("Uploading files", async () => {
             const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-            return await exec.exec("rsync", [
-                args.rsync_options,
+            return await (0, exec_1.exec)("rsync", [
+                ...args.rsync_options.split(" "),
                 args.source_path,
                 destination
             ], {
@@ -4211,7 +4188,7 @@ async function syncFiles(args) {
         });
     }
     catch (error) {
-        core.setFailed(error);
+        (0, core_1.setFailed)(error);
     }
 }
 async function verifyRsyncInstalled() {

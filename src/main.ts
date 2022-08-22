@@ -1,5 +1,5 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
+import { getInput, setFailed, group } from '@actions/core';
+import { exec } from '@actions/exec';
 import { IActionArguments } from './types';
 import commandExistsSync from "command-exists";
 
@@ -16,7 +16,7 @@ async function run() {
   }
   catch (error) {
     console.error(errorDeploying);
-    core.setFailed(error as any);
+    setFailed(error as any);
   }
 }
 
@@ -24,12 +24,12 @@ run();
 
 function getUserArguments(): IActionArguments {
   return {
-    target_server: core.getInput("target-server", { required: true }),
-    destination_path: withDefault(core.getInput("destination-path", { required: false }), "./"),
-    remote_user: core.getInput("remote-user", { required: true }),
-    remote_key: core.getInput("remote-key", { required: true }),
-    source_path: withDefault(core.getInput("source-path", { required: false }), "./"),
-    rsync_options: withDefault(core.getInput("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+    target_server: getInput("target-server", { required: true }),
+    destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
+    remote_user: getInput("remote-user", { required: true }),
+    remote_key: getInput("remote-key", { required: true }),
+    source_path: withDefault(getInput("source-path", { required: false }), "./"),
+    rsync_options: withDefault(getInput("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
   };
 }
 
@@ -46,13 +46,13 @@ function withDefault(value: string, defaultValue: string) {
  */
 async function syncFiles(args: IActionArguments) {
   try {
-    await core.group("Uploading files", async () => {
+    await group("Uploading files", async () => {
       const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
 
-      return await exec.exec(
+      return await exec(
         "rsync",
         [
-          args.rsync_options,
+          ...args.rsync_options.split(" "),
           args.source_path,
           destination
         ],
@@ -79,7 +79,7 @@ async function syncFiles(args: IActionArguments) {
     });
   }
   catch (error) {
-    core.setFailed(error as any);
+    setFailed(error as any);
   }
 }
 
