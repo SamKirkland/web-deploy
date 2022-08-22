@@ -3187,6 +3187,58 @@ module.exports.sync = function(commandName) {
 
 /***/ }),
 
+/***/ 453:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+exports.__esModule = true;
+function parseArgsStringToArgv(value, env, file) {
+    // ([^\s'"]([^\s'"]*(['"])([^\3]*?)\3)+[^\s'"]*) Matches nested quotes until the first space outside of quotes
+    // [^\s'"]+ or Match if not a space ' or "
+    // (['"])([^\5]*?)\5 or Match "quoted text" without quotes
+    // `\3` and `\5` are a backreference to the quote style (' or ") captured
+    var myRegexp = /([^\s'"]([^\s'"]*(['"])([^\3]*?)\3)+[^\s'"]*)|[^\s'"]+|(['"])([^\5]*?)\5/gi;
+    var myString = value;
+    var myArray = [];
+    if (env) {
+        myArray.push(env);
+    }
+    if (file) {
+        myArray.push(file);
+    }
+    var match;
+    do {
+        // Each call to exec returns the next regex match as an array
+        match = myRegexp.exec(myString);
+        if (match !== null) {
+            // Index 1 in the array is the captured group if it exists
+            // Index 0 is the matched text, which we use if no captured group exists
+            myArray.push(firstString(match[1], match[6], match[0]));
+        }
+    } while (match !== null);
+    return myArray;
+}
+exports["default"] = parseArgsStringToArgv;
+exports.parseArgsStringToArgv = parseArgsStringToArgv;
+// Accepts any number of arguments, and returns the first one that is a string
+// (even an empty string)
+function firstString() {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
+        if (typeof arg === "string") {
+            return arg;
+        }
+    }
+}
+
+
+/***/ }),
+
 /***/ 294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -4125,6 +4177,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(186);
 const exec_1 = __nccwpck_require__(514);
 const command_exists_1 = __importDefault(__nccwpck_require__(724));
+const string_argv_1 = __importDefault(__nccwpck_require__(453));
 const errorDeploying = "⚠️ Error deploying";
 async function run() {
     try {
@@ -4162,7 +4215,7 @@ async function syncFiles(args) {
     try {
         await (0, core_1.group)("Uploading files", async () => {
             const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-            const rsyncArguments = args.rsync_options.split(" ");
+            const rsyncArguments = (0, string_argv_1.default)(args.rsync_options);
             if (args.source_path !== undefined) {
                 rsyncArguments.push(args.source_path);
             }

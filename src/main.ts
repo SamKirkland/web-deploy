@@ -2,6 +2,7 @@ import { getInput, setFailed, group } from '@actions/core';
 import { exec } from '@actions/exec';
 import { IActionArguments } from './types';
 import commandExistsSync from "command-exists";
+import stringArgv from 'string-argv';
 
 const errorDeploying = "⚠️ Error deploying";
 
@@ -49,7 +50,7 @@ async function syncFiles(args: IActionArguments) {
     await group("Uploading files", async () => {
       const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
 
-      const rsyncArguments: string[] = args.rsync_options.split(" ");
+      const rsyncArguments: string[] = stringArgv(args.rsync_options);
 
       if (args.source_path !== undefined) {
         rsyncArguments.push(args.source_path);
