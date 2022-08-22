@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { IActionArguments } from './types';
-const { sync: commandExistsSync } = require('command-exists');
+import commandExistsSync from "command-exists";
 
 const errorDeploying = "⚠️ Error deploying";
 
@@ -9,14 +9,14 @@ async function run() {
   try {
     const userArguments = getUserArguments();
 
-    await installCommand("rsync");
+    await verifyRsyncInstalled();
     await syncFiles(userArguments);
 
     console.log("✅ Deploy Complete");
   }
   catch (error) {
     console.error(errorDeploying);
-    core.setFailed(error.message);
+    core.setFailed(error as any);
   }
 }
 
@@ -55,33 +55,23 @@ async function syncFiles(args: IActionArguments) {
           args.rsync_options,
           args.source_path,
           destination
-        ]
-      );
-    });
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-async function installCommand(command: string) {
-  const commandExists = commandExistsSync(command);
-  if (commandExists) {
-    return;
-  }
-
-  try {
-    await core.group(`Installing ${command}`, async () => {
-      return await exec.exec(
-        `sudo apt-get --no-install-recommends install ${command}`,
-        undefined,
+        ],
         {
           listeners: {
+            stdout: (data: Buffer) => {
+              console.log(data);
+            },
             stderr: (data: Buffer) => {
-              throw data.toString();
+              console.error(data);
+            },
+            stdline: (data: string) => {
+              console.log(data);
             },
             errline: (data: string) => {
-              throw data;
+              console.error(data);
+            },
+            debug: (data: string) => {
+              console.info(data);
             }
           }
         }
@@ -89,7 +79,18 @@ async function installCommand(command: string) {
     });
   }
   catch (error) {
-    console.error(`⚠️ Failed to install ${command}`);
-    core.setFailed(error.message);
+    core.setFailed(error as any);
+  }
+}
+
+async function verifyRsyncInstalled() {
+  try {
+    await commandExistsSync("rsync");
+
+    // command exists, continue
+    return;
+  }
+  catch (commandExistsError) {
+    throw new Error("rsync not installed. For instructions on how to fix see https://github.com/SamKirkland/web-deploy#rsync-not-installed");
   }
 };
