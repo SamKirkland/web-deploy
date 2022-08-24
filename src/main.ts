@@ -30,7 +30,7 @@ function getUserArguments(): IActionArguments {
     remote_user: getInput("remote-user", { required: true }),
     remote_key: getInput("remote-key", { required: true }),
     source_path: withDefault(getInput("source-path", { required: false }), "./"),
-    rsync_options: withDefault(getInput("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+    rsync_options: withDefault(getInput("rsync-options"), "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
   };
 }
 

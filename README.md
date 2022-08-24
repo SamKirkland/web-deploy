@@ -60,14 +60,14 @@ Keys can be added directly to your .yml config file or referenced from your proj
 To add a `secret` go to the `Settings` tab in your project then select `Secrets`.
 I strongly recommend you store your `remote-key` as a secret.
 
-| Key Name           | Required? | Example                           | Default                                                                                                                                                 | Description                                                                                                               |
-|--------------------|-----------|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `target-server`    | Yes       | `ftp.samkirkland.com`             |                                                                                                                                                         | Deployment destination server. Formatted as `domain.com:port`. Port is optional, when not specified it will default to 22 |
-| `remote-user`      | Yes       | `username@samkirkland.com`        |                                                                                                                                                         | SSH user name                                                                                                             |
-| `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |                                                                                                                                                         | SSH private key                                                                                                           |
-| `source-path`      | No        | `./myFolderToPublish/`            | `./`                                                                                                                                                    | Path to upload to on the server, must end with trailing slash `/`                                                         |
-| `destination-path` | No        | `ftp.samkirkland.com`             | `./`                                                                                                                                                    | Folder to upload from, must end with trailing slash `/`                                                                   |
-| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
+| Key Name           | Required? | Example                           | Default                                                                                                                                                                  | Description                                                                                                               |
+|--------------------|-----------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `target-server`    | Yes       | `ftp.samkirkland.com`             |                                                                                                                                                                          | Deployment destination server. Formatted as `domain.com:port`. Port is optional, when not specified it will default to 22 |
+| `remote-user`      | Yes       | `username@samkirkland.com`        |                                                                                                                                                                          | SSH user name                                                                                                             |
+| `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |                                                                                                                                                                          | SSH private key                                                                                                           |
+| `source-path`      | No        | `./myFolderToPublish/`            | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                         |
+| `destination-path` | No        | `ftp.samkirkland.com`             | `./`                                                                                                                                                                     | Folder to upload from, must end with trailing slash `/`                                                                   |
+| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
 
 #### Advanced options using `rsync-options`
 Custom arguments, this field is passed through directly into the rsync script. See [rsync's manual](https://linux.die.net/man/1/rsync) for all options.
@@ -75,17 +75,17 @@ You can use as many arguments as you want, seperate them with a space
 
 Below is an incomplete list of commonly used args:
 
-| Option                 | Description                                                                                                                         |
-|------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `--dry-run`            | Does not upload or delete anything, but tells you what it would upload/delete if this was a real deploy                             |
-| `--stats`              | Print verbose statistics on the file transfer, allowing you to tell how effective rsync’s delta-transfer algorithm is for your data |
-| `--links`              | When symlinks are encountered, recreate the symlink on the destination                                                              |
-| `--compress`           | Compresses the file data as it is sent to the destination machine, which reduces the amount of data being transmitted               |
-| `--human-readable`     | Output bytes in a more human-readable format (K, M, G)                                                                              |
-| `--delete`             | When you delete a file on github it will also be deleted on the server                                                              |
-| `--max-size '200K'`    | Ignore syncing files over this limit. Value is a number followed by "K", "M", or "G"                                                |
-| `--exclude 'file.txt'` | Excludes file(s) from the deployment. Supports glob pattterns (ex: `*.jpg`). You can have multiple excludes!                        |
-| `--include 'file.txt'` | Includes file(s) even if it was excluded. Supports glob pattterns (ex: `*.jpg`). You can have multiple includes!                    |
+| Option                 | Description                                                                                                                                |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `--dry-run`            | Does not upload or delete anything, but tells you what it would upload/delete if this was a real deploy                                    |
+| `--stats`              | Print verbose statistics on the file transfer, allowing you to tell how effective rsync’s delta-transfer algorithm is for your data        |
+| `--links`              | When symlinks are encountered, recreate the symlink on the destination                                                                     |
+| `--compress`           | Compresses the file data as it is sent to the destination machine, which reduces the amount of data being transmitted                      |
+| `--human-readable`     | Output bytes in a more human-readable format (K, M, G)                                                                                     |
+| `--delete-after`       | When you delete a file on github it will also be deleted on the server. Files are deleted at the end of a deployment to minimize downtime. |
+| `--max-size '200K'`    | Ignore syncing files over this limit. Value is a number followed by "K", "M", or "G"                                                       |
+| `--exclude 'file.txt'` | Excludes file(s) from the deployment. Supports glob pattterns (ex: `*.jpg`). You can have multiple excludes!                               |
+| `--include 'file.txt'` | Includes file(s) even if it was excluded. Supports glob pattterns (ex: `*.jpg`). You can have multiple includes!                           |
 
 
 # Common Examples
