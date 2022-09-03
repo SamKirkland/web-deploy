@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+      uses: actions/checkout@v3
     
     - name: 📂 Sync files
       uses: SamKirkland/web-deploy@v1.0.0
@@ -100,23 +100,23 @@ on: push
 name: Publish Website
 jobs:
   web-deploy:
-    name: 🚀 Deploy website every commit
+    name: 🚀 Deploy Website Every Commit
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
 
-    - name: Use Node.js 12.x
-      uses: actions/setup-node@v1
+    - name: 📦 Install Packages
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
+        node-version: 18
+        cache: "npm"
+    - run: npm ci
       
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
+    - name: 🔨 Build
+      run: npm run build
     
-    - name: 📂 Sync files
+    - name: 📂 Sync Files
       uses: SamKirkland/web-deploy@v1.0.0
       with:
         target-server: samkirkland.com
@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+      uses: actions/checkout@v3
 
     - name: 📂 Sync files
       uses: SamKirkland/web-deploy@v1.0.0

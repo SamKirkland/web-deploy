@@ -7,9 +7,13 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
       - run: npm ci
-      - run: npm test-ci
+      - run: npm run test-ci
 
       - name: Test Report
         uses: dorny/test-reporter@v1
