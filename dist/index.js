@@ -3435,7 +3435,7 @@ async function run() {
   try {
     const userArguments = getUserArguments();
     await verifyRsyncInstalled();
-    await setupSSHPrivateKey(userArguments.remote_key, "web-deploy-action");
+    await setupSSHPrivateKey(userArguments.remote_key);
     await syncFiles(userArguments);
     console.log("\u2705 Deploy Complete");
   } catch (error) {
@@ -3509,18 +3509,18 @@ var {
   HOME,
   GITHUB_WORKSPACE
 } = process.env;
-async function setupSSHPrivateKey(key, name) {
+async function setupSSHPrivateKey(key) {
   const sshFolderPath = (0, import_path.join)(HOME || __dirname, ".ssh");
-  const sshFilePath = (0, import_path.join)(sshFolderPath, name);
+  const knownHostsFile = (0, import_path.join)(sshFolderPath, "known_hosts");
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
   await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
-  await import_fs.promises.writeFile(sshFilePath, key, {
+  await import_fs.promises.appendFile(knownHostsFile, key, {
     encoding: "utf8",
     mode: 384
   });
-  console.log("\u2705 Ssh key added to `.ssh` dir ", sshFilePath);
-  return sshFilePath;
+  console.log("\u2705 Ssh key added to `.ssh` dir ", knownHostsFile);
+  return knownHostsFile;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

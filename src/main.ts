@@ -1,8 +1,8 @@
-import { getInput, setFailed, group } from '@actions/core';
-import { exec } from '@actions/exec';
-import { IActionArguments } from './types';
+import { getInput, setFailed, group } from "@actions/core";
+import { exec } from "@actions/exec";
+import { IActionArguments } from "./types";
 import commandExistsSync from "command-exists";
-import stringArgv from 'string-argv';
+import stringArgv from "string-argv";
 import { promises } from "fs";
 import { join } from "path";
 
@@ -13,7 +13,7 @@ async function run() {
     const userArguments = getUserArguments();
 
     await verifyRsyncInstalled();
-    await setupSSHPrivateKey(userArguments.remote_key, "web-deploy-action");
+    await setupSSHPrivateKey(userArguments.remote_key);
     await syncFiles(userArguments);
 
     console.log("✅ Deploy Complete");
@@ -108,19 +108,19 @@ const {
   GITHUB_WORKSPACE
 } = process.env;
 
-export async function setupSSHPrivateKey(key: string, name: string) {
+export async function setupSSHPrivateKey(key: string) {
   const sshFolderPath = join(HOME || __dirname, '.ssh');
-  const sshFilePath = join(sshFolderPath, name);
+  const knownHostsFile = join(sshFolderPath, "known_hosts");
 
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
 
   await promises.mkdir(sshFolderPath, { recursive: true });
-  await promises.writeFile(sshFilePath, key, {
+  await promises.appendFile(knownHostsFile, key, {
     encoding: 'utf8',
     mode: 0o600
   });
-  console.log('✅ Ssh key added to `.ssh` dir ', sshFilePath);
+  console.log('✅ Ssh key added to `.ssh` dir ', knownHostsFile);
 
-  return sshFilePath;
+  return knownHostsFile;
 };
