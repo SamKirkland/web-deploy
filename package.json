@@ -7,7 +7,7 @@
   "scripts": {
     "build": "esbuild src/main.ts --bundle --platform=node --outfile=dist/index.js",
     "test": "jest",
-    "test-ci": "jest --ci --reporters=default --reporters=jest-Junit"
+    "test-ci": "jest --ci --reporters=default --reporters=jest-junit"
   },
   "repository": {
     "type": "git",
@@ -41,8 +41,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testResultsProcessor": "./node_modules/jest-junit-reporter"
+    "testEnvironment": "node"
   },
   "jest-junit": {
     "outputDirectory": "reports",
