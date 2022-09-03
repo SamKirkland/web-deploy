@@ -1,9 +1,9 @@
-import { getInput, setFailed, group } from "@actions/core";
-import { exec } from "@actions/exec";
+import { getInput, setFailed } from "@actions/core";
+import { exec, ExecOptions } from "@actions/exec";
 import { IActionArguments } from "./types";
 import commandExistsSync from "command-exists";
 import stringArgv from "string-argv";
-import { existsSync, promises, writeFile } from "fs";
+import { existsSync, promises } from "fs";
 import { join } from "path";
 
 // note: when updating also update README.md, action.yml
@@ -51,35 +51,25 @@ function withDefault(value: string, defaultValue: string) {
 /**
  * Sync changed files
  */
-async function syncFiles(privateKeyPath: string, args: IActionArguments) {
+export async function syncFiles(privateKeyPath: string, args: IActionArguments) {
   try {
-    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-
     const rsyncArguments: string[] = [];
 
     rsyncArguments.push(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`);
+
+    rsyncArguments.push(...stringArgv(args.rsync_options));
 
     if (args.source_path !== undefined) {
       rsyncArguments.push(args.source_path);
     }
 
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
-
-    rsyncArguments.push(...stringArgv(args.rsync_options));
 
     return await exec(
       "rsync",
       rsyncArguments,
-      {
-        listeners: {
-          stdout: (data: Buffer) => {
-            console.log(data);
-          },
-          stderr: (data: Buffer) => {
-            console.error(data);
-          },
-        }
-      }
+      mapOutput
     );
   }
   catch (error) {
@@ -133,4 +123,15 @@ export async function setupSSHPrivateKey(key: string) {
   console.log('✅ Ssh key added to `.ssh` dir ', privateKeyPath);
 
   return privateKeyPath;
+};
+
+export const mapOutput: ExecOptions = {
+  listeners: {
+    stdout: (data: Buffer) => {
+      console.log(data);
+    },
+    stderr: (data: Buffer) => {
+      console.error(data);
+    },
+  }
 };

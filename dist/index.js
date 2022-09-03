@@ -1764,7 +1764,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
+    var { access, appendFile, writeFile } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1800,7 +1800,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile2 : appendFile;
+          const writeFunc = overwrite ? writeFile : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -2124,7 +2124,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issue("endgroup");
     }
     exports.endGroup = endGroup;
-    function group2(name, fn) {
+    function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
         startGroup(name);
         let result;
@@ -2136,7 +2136,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
         return result;
       });
     }
-    exports.group = group2;
+    exports.group = group;
     function saveState(name, value) {
       command_1.issueCommand("save-state", { name }, value);
     }
@@ -3421,7 +3421,9 @@ var require_string_argv = __commonJS({
 // src/main.ts
 var main_exports = {};
 __export(main_exports, {
-  setupSSHPrivateKey: () => setupSSHPrivateKey
+  mapOutput: () => mapOutput,
+  setupSSHPrivateKey: () => setupSSHPrivateKey,
+  syncFiles: () => syncFiles
 });
 module.exports = __toCommonJS(main_exports);
 var import_core = __toESM(require_core());
@@ -3430,13 +3432,14 @@ var import_command_exists = __toESM(require_command_exists2());
 var import_string_argv = __toESM(require_string_argv());
 var import_fs = require("fs");
 var import_path = require("path");
+var default_rsync_options = "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore";
 var errorDeploying = "\u26A0\uFE0F Error deploying";
 async function run() {
   try {
     const userArguments = getUserArguments();
     await verifyRsyncInstalled();
     const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
-    await syncFiles(userArguments);
+    await syncFiles(privateKeyPath, userArguments);
     console.log("\u2705 Deploy Complete");
   } catch (error) {
     console.error(errorDeploying);
@@ -3451,7 +3454,8 @@ function getUserArguments() {
     remote_user: (0, import_core.getInput)("remote-user", { required: true }),
     remote_key: (0, import_core.getInput)("remote-key", { required: true }),
     source_path: withDefault((0, import_core.getInput)("source-path", { required: false }), "./"),
-    rsync_options: withDefault((0, import_core.getInput)("rsync-options"), "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+    ssh_port: withDefault((0, import_core.getInput)("ssh-port"), "22"),
+    rsync_options: withDefault((0, import_core.getInput)("rsync-options"), default_rsync_options)
   };
 }
 function withDefault(value, defaultValue) {
@@ -3460,27 +3464,20 @@ function withDefault(value, defaultValue) {
   }
   return value;
 }
-async function syncFiles(args) {
+async function syncFiles(privateKeyPath, args) {
   try {
-    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-    const rsyncArguments = (0, import_string_argv.default)(args.rsync_options);
+    const rsyncArguments = [];
+    rsyncArguments.push(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`);
+    rsyncArguments.push(...(0, import_string_argv.default)(args.rsync_options));
     if (args.source_path !== void 0) {
       rsyncArguments.push(args.source_path);
     }
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
     return await (0, import_exec.exec)(
       "rsync",
       rsyncArguments,
-      {
-        listeners: {
-          stdout: (data) => {
-            console.log(data);
-          },
-          stderr: (data) => {
-            console.error(data);
-          }
-        }
-      }
+      mapOutput
     );
   } catch (error) {
     (0, import_core.setFailed)(error);
@@ -3522,7 +3519,19 @@ async function setupSSHPrivateKey(key) {
   console.log("\u2705 Ssh key added to `.ssh` dir ", privateKeyPath);
   return privateKeyPath;
 }
+var mapOutput = {
+  listeners: {
+    stdout: (data) => {
+      console.log(data);
+    },
+    stderr: (data) => {
+      console.error(data);
+    }
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  setupSSHPrivateKey
+  mapOutput,
+  setupSSHPrivateKey,
+  syncFiles
 });
