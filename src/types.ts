@@ -5,6 +5,6 @@ export interface IActionArguments {
     remote_user: string;
     remote_key: string;
 
-    /** @default "--verbose --recursive --compress --human-readable" */
+    ssh_port: string;
     rsync_options: string;
 }

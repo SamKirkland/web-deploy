@@ -67,7 +67,7 @@ I strongly recommend you store your `remote-key` as a secret.
 | `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |                                                                                                                                                                          | SSH private key                                                                                                           |
 | `source-path`      | No        | `./myFolderToPublish/`            | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                         |
 | `destination-path` | No        | `ftp.samkirkland.com`             | `./`                                                                                                                                                                     | Folder to upload from, must end with trailing slash `/`                                                                   |
-| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
+| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
 
 #### Advanced options using `rsync-options`
 Custom arguments, this field is passed through directly into the rsync script. See [rsync's manual](https://linux.die.net/man/1/rsync) for all options.
@@ -77,16 +77,19 @@ Below is an incomplete list of commonly used args:
 
 | Option                 | Description                                                                                                                                |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `--archive`            | A quick way of saying you want recursion and want to preserve almost everything                                                            |
 | `--dry-run`            | Does not upload or delete anything, but tells you what it would upload/delete if this was a real deploy                                    |
 | `--stats`              | Print verbose statistics on the file transfer, allowing you to tell how effective rsync’s delta-transfer algorithm is for your data        |
 | `--links`              | When symlinks are encountered, recreate the symlink on the destination                                                                     |
 | `--compress`           | Compresses the file data as it is sent to the destination machine, which reduces the amount of data being transmitted                      |
 | `--human-readable`     | Output bytes in a more human-readable format (K, M, G)                                                                                     |
+| `--itemize-changes`    | itemized list of the changes that are being made to each file, including attribute changes                                                 |
 | `--delete-after`       | When you delete a file on github it will also be deleted on the server. Files are deleted at the end of a deployment to minimize downtime. |
 | `--max-size '200K'`    | Ignore syncing files over this limit. Value is a number followed by "K", "M", or "G"                                                       |
 | `--exclude 'file.txt'` | Excludes file(s) from the deployment. Supports glob pattterns (ex: `*.jpg`). You can have multiple excludes!                               |
 | `--include 'file.txt'` | Includes file(s) even if it was excluded. Supports glob pattterns (ex: `*.jpg`). You can have multiple includes!                           |
 
+See [rsync's manual](https://linux.die.net/man/1/rsync) for all options
 
 # Common Examples
 #### Build and Publish React/Angular/Vue Website

@@ -6,6 +6,8 @@ import stringArgv from "string-argv";
 import { existsSync, promises, writeFile } from "fs";
 import { join } from "path";
 
+// note: when updating also update README.md, action.yml
+const default_rsync_options = "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore";
 const errorDeploying = "⚠️ Error deploying";
 
 async function run() {
@@ -14,7 +16,7 @@ async function run() {
 
     await verifyRsyncInstalled();
     const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
-    await syncFiles(userArguments);
+    await syncFiles(privateKeyPath, userArguments);
 
     console.log("✅ Deploy Complete");
   }
@@ -33,7 +35,8 @@ function getUserArguments(): IActionArguments {
     remote_user: getInput("remote-user", { required: true }),
     remote_key: getInput("remote-key", { required: true }),
     source_path: withDefault(getInput("source-path", { required: false }), "./"),
-    rsync_options: withDefault(getInput("rsync-options"), "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+    ssh_port: withDefault(getInput("ssh-port"), "22"),
+    rsync_options: withDefault(getInput("rsync-options"), default_rsync_options)
   };
 }
 
@@ -48,17 +51,21 @@ function withDefault(value: string, defaultValue: string) {
 /**
  * Sync changed files
  */
-async function syncFiles(args: IActionArguments) {
+async function syncFiles(privateKeyPath: string, args: IActionArguments) {
   try {
     const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
 
-    const rsyncArguments: string[] = stringArgv(args.rsync_options);
+    const rsyncArguments: string[] = [];
+
+    rsyncArguments.push(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`);
 
     if (args.source_path !== undefined) {
       rsyncArguments.push(args.source_path);
     }
 
     rsyncArguments.push(destination);
+
+    rsyncArguments.push(...stringArgv(args.rsync_options));
 
     return await exec(
       "rsync",
