@@ -1,0 +1,58 @@
+name: Release Drafter
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+        # with:
+        #   config-name: my-config.yml
+        #   disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        with:
+          name-template: "v$RESOLVED_VERSION"
+          tag-template: "v$RESOLVED_VERSION"
+          categories:
+            - title: "Web Deploy v$RESOLVED_VERSION"
+              labels:
+                - "feature"
+                - "enhancement"
+            - title: "🐛 Bug Fixes"
+              labels:
+                - "fix"
+                - "bugfix"
+                - "bug"
+            - title: "🧰 Maintenance"
+              label: "chore"
+          change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+          change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+          version-resolver:
+            major:
+              labels:
+                - "major"
+            minor:
+              labels:
+                - "minor"
+            patch:
+              labels:
+                - "patch"
+            default: patch
+          template: |
+            ## Changes
+
+            $CHANGES

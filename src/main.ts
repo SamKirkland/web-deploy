@@ -1,22 +1,28 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import { IActionArguments } from './types';
-const { sync: commandExistsSync } = require('command-exists');
+import { getInput, setFailed } from "@actions/core";
+import { exec, ExecOptions } from "@actions/exec";
+import { IActionArguments } from "./types";
+import commandExistsSync from "command-exists";
+import stringArgv from "string-argv";
+import { existsSync, promises } from "fs";
+import { join } from "path";
 
+// note: when updating also update README.md, action.yml
+const default_rsync_options = "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore";
 const errorDeploying = "⚠️ Error deploying";
 
 async function run() {
   try {
     const userArguments = getUserArguments();
 
-    await installCommand("rsync");
-    await syncFiles(userArguments);
+    await verifyRsyncInstalled();
+    const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
+    await syncFiles(privateKeyPath, userArguments);
 
     console.log("✅ Deploy Complete");
   }
   catch (error) {
     console.error(errorDeploying);
-    core.setFailed(error.message);
+    setFailed(error as any);
   }
 }
 
@@ -24,12 +30,13 @@ run();
 
 function getUserArguments(): IActionArguments {
   return {
-    target_server: core.getInput("target-server", { required: true }),
-    destination_path: withDefault(core.getInput("destination-path", { required: false }), "./"),
-    remote_user: core.getInput("remote-user", { required: true }),
-    remote_key: core.getInput("remote-key", { required: true }),
-    source_path: withDefault(core.getInput("source-path", { required: false }), "./"),
-    rsync_options: withDefault(core.getInput("rsync-options"), "--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore")
+    target_server: getInput("target-server", { required: true }),
+    destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
+    remote_user: getInput("remote-user", { required: true }),
+    remote_key: getInput("remote-key", { required: true }),
+    source_path: withDefault(getInput("source-path", { required: false }), "./"),
+    ssh_port: withDefault(getInput("ssh-port"), "22"),
+    rsync_options: withDefault(getInput("rsync-options"), default_rsync_options)
   };
 }
 
@@ -44,52 +51,87 @@ function withDefault(value: string, defaultValue: string) {
 /**
  * Sync changed files
  */
-async function syncFiles(args: IActionArguments) {
+export async function syncFiles(privateKeyPath: string, args: IActionArguments) {
   try {
-    await core.group("Uploading files", async () => {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    const rsyncArguments: string[] = [];
 
-      return await exec.exec(
-        "rsync",
-        [
-          args.rsync_options,
-          args.source_path,
-          destination
-        ]
-      );
-    });
+    rsyncArguments.push(...stringArgv(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`));
+
+    rsyncArguments.push(...stringArgv(args.rsync_options));
+
+    if (args.source_path !== undefined) {
+      rsyncArguments.push(args.source_path);
+    }
+
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    rsyncArguments.push(destination);
+
+    return await exec(
+      "rsync",
+      rsyncArguments,
+      mapOutput
+    );
   }
   catch (error) {
-    core.setFailed(error.message);
+    setFailed(error as any);
   }
 }
 
-async function installCommand(command: string) {
-  const commandExists = commandExistsSync(command);
-  if (commandExists) {
+async function verifyRsyncInstalled() {
+  try {
+    await commandExistsSync("rsync");
+
+    // command exists, continue
     return;
   }
-
-  try {
-    await core.group(`Installing ${command}`, async () => {
-      return await exec.exec(
-        `sudo apt-get --no-install-recommends install ${command}`,
-        undefined,
-        {
-          listeners: {
-            stderr: (data: Buffer) => {
-              throw data.toString();
-            },
-            errline: (data: string) => {
-              throw data;
-            }
-          }
-        }
-      );
-    });
+  catch (commandExistsError) {
+    throw new Error("rsync not installed. For instructions on how to fix see https://github.com/SamKirkland/web-deploy#rsync-not-installed");
   }
-  catch (error) {
-    console.error(`⚠️ Failed to install ${command}`);
-    core.setFailed(error.message);
+};
+
+const {
+  HOME,
+  GITHUB_WORKSPACE
+} = process.env;
+
+export async function setupSSHPrivateKey(key: string) {
+  const sshFolderPath = join(HOME || __dirname, '.ssh');
+  const privateKeyPath = join(sshFolderPath, "web_deploy_key");
+
+  console.log("HOME", HOME);
+  console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
+
+  await promises.mkdir(sshFolderPath, { recursive: true });
+
+  const knownHostsPath = `${sshFolderPath}/known_hosts`;
+
+  if (!existsSync(knownHostsPath)) {
+    console.log(`[SSH] Creating ${knownHostsPath} file in `, GITHUB_WORKSPACE);
+    await promises.writeFile(knownHostsPath, "", {
+      encoding: 'utf8',
+      mode: 0o600
+    });
+    console.log('✅ [SSH] file created.');
+  } else {
+    console.log(`[SSH] ${knownHostsPath} file exist`);
+  }
+
+  await promises.writeFile(privateKeyPath, key, {
+    encoding: 'utf8',
+    mode: 0o600
+  });
+  console.log('✅ Ssh key added to `.ssh` dir ', privateKeyPath);
+
+  return privateKeyPath;
+};
+
+export const mapOutput: ExecOptions = {
+  listeners: {
+    stdout: (data: Buffer) => {
+      console.log(data);
+    },
+    stderr: (data: Buffer) => {
+      console.error(data);
+    },
   }
 };

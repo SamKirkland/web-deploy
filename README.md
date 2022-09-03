@@ -1,12 +1,8 @@
-:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
-### This package has not been released yet. Feel free to test it out but at your own risk
-:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
-
 <p align="center">
   <img alt="web deploy - Continuous integration for everyone" src="images/web-deploy-logo-small.png">
 </p>
 
-Automate deploying websites and more with this GitHub action
+Automate deploying websites and more with this GitHub action. **It's free!**
 
 ![Test web deploy](https://github.com/SamKirkland/web-deploy/workflows/Test%20web%20deploy/badge.svg)
 
@@ -23,14 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+      uses: actions/checkout@v3
     
     - name: 📂 Sync files
-      uses: SamKirkland/web-deploy@1.0.0
+      uses: SamKirkland/web-deploy@v1.0.0
       with:
         target-server: samkirkland.com
-        remote-user: myFtpUserName
-        remote-key: ${{ secrets.SSH_KEY }}
+        username: myFtpUserName
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        args: 
+        local-dir:
+        server-dir:
+        exclude: 
 ```
 
 ---
@@ -60,14 +60,14 @@ Keys can be added directly to your .yml config file or referenced from your proj
 To add a `secret` go to the `Settings` tab in your project then select `Secrets`.
 I strongly recommend you store your `remote-key` as a secret.
 
-| Key Name           | Required? | Example                           | Default | Description                                              |
-|--------------------|-----------|-----------------------------------|---------|----------------------------------------------------------|
-| `target-server`    | Yes       | `ftp.samkirkland.com`             |         | Deployment destination server. Formatted as `domain.com:port`. Port is optional, when not specified it will default to 22 |
-| `remote-user`      | Yes       | `username@samkirkland.com`        |         | SSH user name                                            |
-| `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |         | SSH private key                                          |
-| `source-path`      | No        | `./myFolderToPublish/`            | `./`    | Path to upload to on the server, must end with trailing slash `/` |
-| `destination-path` | No        | `ftp.samkirkland.com`             | `./`    | Folder to upload from, must end with trailing slash `/`  |
-| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --delete --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude .gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script |
+| Key Name           | Required? | Example                           | Default                                                                                                                                                                  | Description                                                                                                               |
+|--------------------|-----------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `target-server`    | Yes       | `ftp.samkirkland.com`             |                                                                                                                                                                          | Deployment destination server. Formatted as `domain.com:port`. Port is optional, when not specified it will default to 22 |
+| `remote-user`      | Yes       | `username@samkirkland.com`        |                                                                                                                                                                          | SSH user name                                                                                                             |
+| `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |                                                                                                                                                                          | SSH private key                                                                                                           |
+| `source-path`      | No        | `./myFolderToPublish/`            | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                         |
+| `destination-path` | No        | `ftp.samkirkland.com`             | `./`                                                                                                                                                                     | Folder to upload from, must end with trailing slash `/`                                                                   |
+| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
 
 #### Advanced options using `rsync-options`
 Custom arguments, this field is passed through directly into the rsync script. See [rsync's manual](https://linux.die.net/man/1/rsync) for all options.
@@ -75,18 +75,21 @@ You can use as many arguments as you want, seperate them with a space
 
 Below is an incomplete list of commonly used args:
 
-| Option                 | Description                                                                                                      |
-|------------------------|------------------------------------------------------------------------------------------------------------------|
-| `--dry-run`            | Does not upload or delete anything, but tells you what it would upload/delete if this was a real deploy          |
-| `--stats`              | Print verbose statistics on the file transfer, allowing you to tell how effective rsync’s delta-transfer algorithm is for your data |
-| `--links`              | When symlinks are encountered, recreate the symlink on the destination                                           |
-| `--compress`           | Compresses the file data as it is sent to the destination machine, which reduces the amount of data being transmitted  |
-| `--human-readable`     | Output bytes in a more human-readable format (K, M, G)                                                           |
-| `--delete`             | When you delete a file on github it will also be deleted on the server                                           |
-| `--max-size '200K'`    | Ignore syncing files over this limit. Value is a number followed by "K", "M", or "G"                             |
-| `--exclude 'file.txt'` | Excludes file(s) from the deployment. Supports glob pattterns (ex: `*.jpg`). You can have multiple excludes!     |
-| `--include 'file.txt'` | Includes file(s) even if it was excluded. Supports glob pattterns (ex: `*.jpg`). You can have multiple includes! |
+| Option                 | Description                                                                                                                                |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `--archive`            | A quick way of saying you want recursion and want to preserve almost everything                                                            |
+| `--dry-run`            | Does not upload or delete anything, but tells you what it would upload/delete if this was a real deploy                                    |
+| `--stats`              | Print verbose statistics on the file transfer, allowing you to tell how effective rsync’s delta-transfer algorithm is for your data        |
+| `--links`              | When symlinks are encountered, recreate the symlink on the destination                                                                     |
+| `--compress`           | Compresses the file data as it is sent to the destination machine, which reduces the amount of data being transmitted                      |
+| `--human-readable`     | Output bytes in a more human-readable format (K, M, G)                                                                                     |
+| `--itemize-changes`    | itemized list of the changes that are being made to each file, including attribute changes                                                 |
+| `--delete-after`       | When you delete a file on github it will also be deleted on the server. Files are deleted at the end of a deployment to minimize downtime. |
+| `--max-size '200K'`    | Ignore syncing files over this limit. Value is a number followed by "K", "M", or "G"                                                       |
+| `--exclude 'file.txt'` | Excludes file(s) from the deployment. Supports glob pattterns (ex: `*.jpg`). You can have multiple excludes!                               |
+| `--include 'file.txt'` | Includes file(s) even if it was excluded. Supports glob pattterns (ex: `*.jpg`). You can have multiple includes!                           |
 
+See [rsync's manual](https://linux.die.net/man/1/rsync) for all options
 
 # Common Examples
 #### Build and Publish React/Angular/Vue Website
@@ -97,24 +100,24 @@ on: push
 name: Publish Website
 jobs:
   web-deploy:
-    name: 🚀 Deploy website every commit
+    name: 🚀 Deploy Website Every Commit
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
 
-    - name: Use Node.js 12.x
-      uses: actions/setup-node@v1
+    - name: 📦 Install Packages
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
+        node-version: 18
+        cache: "npm"
+    - run: npm ci
       
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
+    - name: 🔨 Build
+      run: npm run build
     
-    - name: 📂 Sync files
-      uses: SamKirkland/web-deploy@1.0.0
+    - name: 📂 Sync Files
+      uses: SamKirkland/web-deploy@v1.0.0
       with:
         target-server: samkirkland.com
         remote-user: myFtpUserName
@@ -132,10 +135,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@v2.1.0
+      uses: actions/checkout@v3
 
     - name: 📂 Sync files
-      uses: SamKirkland/web-deploy@1.0.0
+      uses: SamKirkland/web-deploy@v1.0.0
       with:
         ftp-server: samkirkland.com
         ftp-username: myFTPUsername
@@ -172,40 +175,47 @@ Example excluding a specific folder:
 `rsync-options: --exclude "wp-content/themes/"`
 </details>
 
-
-<details>
-  <summary>How do I set a upload timeout?</summary>
-
-github has a built-in `timeout-minutes` option, see customized example below
-
-```yaml
-on: push
-name: Publish Website
-jobs:
-  web-deploy:
-    name: web-deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 15 # time out after 15 minutes (default is 360 minutes)
-    steps:
-      ....
-```
-</details>
-
 ---
 
 ## Common Errors
-<details id="ssl-peer-certificate">
-  <summary>Error: SSL peer certificate or SSH remote key was not OK</summary>
+<details id="rsync-not-installed">
+  <summary>rsync not found. Please see https://github.com/SamKirkland/web-deploy#rsync-not-installed</summary>
 
-  Whitelist your host via the `known-hosts` configuration option or add the `--insecure` argument
+  
+  This library uses `rsync` to sync files. The script was not able to detect `rsync` on the machine running the action.
+  If you are using `runs-on: ubuntu-latest` you will always have `rsync`.
+
+  If you are using `windows-latest`, `windows-XXXX`, `macos-latest`, `macos-12` or a [self-hosted](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) runner you will need to install rsync before the `web-deploy` step.
+
+  This is pretty easy to do!
+
+  On `windows` runners run your windows specific steps, then use a `ubuntu-latest` step to deploy.
+
+  On self-hosted runners install rsync **before** the `web-deploy` step.
+  ```yaml
+    runs-on: [self-hosted, linux, my-self-hosted-runner-label]
+    steps:
+      - name: Install rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install rsync
+  ```
+
+  On `macos` runners install rsync **before** the `web-deploy` step.
+  ```yaml
+    runs-on: macos-latest
+    steps:
+      - name: Install rsync
+        run: |
+          brew update
+          brew install rsync
+  ```
+
+  [Read more about customizing runners](https://docs.github.com/en/actions/using-github-hosted-runners/customizing-github-hosted-runners)
+
+
+
+  https://docs.github.com/en/actions/using-github-hosted-runners/customizing-github-hosted-runners
 </details>
 
 ---
-
-## Debugging locally
-##### Instructions for debugging on windows
-- Install docker for windows
-- Open powershell
-- Navigate to the repo folder
-- Run `docker build --tag action .`
-- Run `docker run action`

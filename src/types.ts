@@ -1,10 +1,10 @@
 export interface IActionArguments {
     target_server: string;
-    source_path: string;
+    source_path: string | undefined;
     destination_path: string;
     remote_user: string;
     remote_key: string;
 
-    /** @default "--verbose --recursive --compress --human-readable" */
+    ssh_port: string;
     rsync_options: string;
 }

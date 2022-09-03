@@ -5,8 +5,9 @@
   "description": "web deploy",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/main.ts --no-cache",
-    "deploy": "npm run build && node ./dist/index.js --target-server samkirkland.com --remote-user \"sshUser\" --remote-key \"sshPassword\" --source-path ./ --destination-path rsync-target/"
+    "build": "esbuild src/main.ts --bundle --platform=node --outfile=dist/index.js",
+    "test": "jest",
+    "test-ci": "jest --ci --reporters=default --reporters=jest-junit"
   },
   "repository": {
     "type": "git",
@@ -22,13 +23,33 @@
   "author": "Sam Kirkland",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4",
-    "command-exists": "^1.2.9"
+    "@actions/core": "^1.9.1",
+    "@actions/exec": "^1.1.1",
+    "@types/command-exists": "^1.2.0",
+    "command-exists": "^1.2.9",
+    "esbuild": "^0.15.6",
+    "string-argv": "^0.3.1"
   },
   "devDependencies": {
-    "@types/node": "12.12.8",
-    "@vercel/ncc": "^0.25.1",
-    "typescript": "^4.1.2"
+    "@types/jest": "^28.0.0",
+    "@types/node": "^18.7.9",
+    "jest": "^28.0.0",
+    "jest-junit": "^14.0.1",
+    "jest-junit-reporter": "^1.1.0",
+    "ts-jest": "^28.0.0",
+    "typescript": "^4.7.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports",
+    "outputName": "jest-junit.xml",
+    "ancestorSeparator": " › ",
+    "uniqueOutputName": "false",
+    "suiteNameTemplate": "{filepath}",
+    "classNameTemplate": "{classname}",
+    "titleTemplate": "{title}"
   }
 }
