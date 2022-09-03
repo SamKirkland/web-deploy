@@ -1764,7 +1764,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile } = fs_1.promises;
+    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1800,7 +1800,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile : appendFile;
+          const writeFunc = overwrite ? writeFile2 : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -3435,7 +3435,7 @@ async function run() {
   try {
     const userArguments = getUserArguments();
     await verifyRsyncInstalled();
-    await setupSSHPrivateKey(userArguments.remote_key);
+    const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
     await syncFiles(userArguments);
     console.log("\u2705 Deploy Complete");
   } catch (error) {
@@ -3511,16 +3511,27 @@ var {
 } = process.env;
 async function setupSSHPrivateKey(key) {
   const sshFolderPath = (0, import_path.join)(HOME || __dirname, ".ssh");
-  const knownHostsFile = (0, import_path.join)(sshFolderPath, "known_hosts");
+  const privateKeyPath = (0, import_path.join)(sshFolderPath, "web_deploy_key");
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
+  const knownHostsPath = `${sshFolderPath}/known_hosts`;
+  if (!(0, import_fs.existsSync)(knownHostsPath)) {
+    console.log(`[SSH] Creating ${knownHostsPath} file in `, GITHUB_WORKSPACE);
+    await import_fs.promises.writeFile(knownHostsPath, "", {
+      encoding: "utf8",
+      mode: 384
+    });
+    console.log("\u2705 [SSH] file created.");
+  } else {
+    console.log(`[SSH] ${knownHostsPath} file exist`);
+  }
   await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
-  await import_fs.promises.appendFile(knownHostsFile, key, {
+  await import_fs.promises.writeFile(privateKeyPath, key, {
     encoding: "utf8",
     mode: 384
   });
-  console.log("\u2705 Ssh key added to `.ssh` dir ", knownHostsFile);
-  return knownHostsFile;
+  console.log("\u2705 Ssh key added to `.ssh` dir ", privateKeyPath);
+  return privateKeyPath;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
