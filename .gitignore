@@ -1,5 +1,5 @@
 __tests__/runner/*
-test-report.xml
+reports/
 
 # comment out in distribution branches
 node_modules/

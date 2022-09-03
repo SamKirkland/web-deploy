@@ -7,7 +7,7 @@
   "scripts": {
     "build": "esbuild src/main.ts --bundle --platform=node --outfile=dist/index.js",
     "test": "jest",
-    "test-ci": "jest"
+    "test-ci": "jest --ci --reporters=default --reporters=jest-Junit"
   },
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
     "@types/jest": "^28.0.0",
     "@types/node": "^18.7.9",
     "jest": "^28.0.0",
+    "jest-junit": "^14.0.1",
     "jest-junit-reporter": "^1.1.0",
     "ts-jest": "^28.0.0",
     "typescript": "^4.7.4"
@@ -42,5 +43,14 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testResultsProcessor": "./node_modules/jest-junit-reporter"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports",
+    "outputName": "jest-junit.xml",
+    "ancestorSeparator": " › ",
+    "uniqueOutputName": "false",
+    "suiteNameTemplate": "{filepath}",
+    "classNameTemplate": "{classname}",
+    "titleTemplate": "{title}"
   }
 }
