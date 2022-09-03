@@ -3514,6 +3514,7 @@ async function setupSSHPrivateKey(key) {
   const privateKeyPath = (0, import_path.join)(sshFolderPath, "web_deploy_key");
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
+  await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
   const knownHostsPath = `${sshFolderPath}/known_hosts`;
   if (!(0, import_fs.existsSync)(knownHostsPath)) {
     console.log(`[SSH] Creating ${knownHostsPath} file in `, GITHUB_WORKSPACE);
@@ -3525,7 +3526,6 @@ async function setupSSHPrivateKey(key) {
   } else {
     console.log(`[SSH] ${knownHostsPath} file exist`);
   }
-  await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
   await import_fs.promises.writeFile(privateKeyPath, key, {
     encoding: "utf8",
     mode: 384

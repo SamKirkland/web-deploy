@@ -115,6 +115,8 @@ export async function setupSSHPrivateKey(key: string) {
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
 
+  await promises.mkdir(sshFolderPath, { recursive: true });
+
   const knownHostsPath = `${sshFolderPath}/known_hosts`;
 
   if (!existsSync(knownHostsPath)) {
@@ -128,7 +130,6 @@ export async function setupSSHPrivateKey(key: string) {
     console.log(`[SSH] ${knownHostsPath} file exist`);
   }
 
-  await promises.mkdir(sshFolderPath, { recursive: true });
   await promises.writeFile(privateKeyPath, key, {
     encoding: 'utf8',
     mode: 0o600
