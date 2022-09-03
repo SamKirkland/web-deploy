@@ -67,19 +67,19 @@ async function syncFiles(args: IActionArguments) {
         {
           listeners: {
             stdout: (data: Buffer) => {
-              console.log(data);
+              console.log("stdout", data);
             },
             stderr: (data: Buffer) => {
-              console.error(data);
+              console.error("stderr", data);
             },
             stdline: (data: string) => {
-              console.log(data);
+              console.log("stdline", data);
             },
             errline: (data: string) => {
-              console.error(data);
+              console.error("errline", data);
             },
             debug: (data: string) => {
-              console.info(data);
+              console.info("debug", data);
             }
           }
         }
