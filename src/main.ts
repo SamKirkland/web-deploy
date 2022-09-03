@@ -3,7 +3,8 @@ import { exec } from '@actions/exec';
 import { IActionArguments } from './types';
 import commandExistsSync from "command-exists";
 import stringArgv from 'string-argv';
-import { setupSSHPrivateKey } from "./ssh";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 const errorDeploying = "⚠️ Error deploying";
 
@@ -100,4 +101,26 @@ async function verifyRsyncInstalled() {
   catch (commandExistsError) {
     throw new Error("rsync not installed. For instructions on how to fix see https://github.com/SamKirkland/web-deploy#rsync-not-installed");
   }
+};
+
+const {
+  HOME,
+  GITHUB_WORKSPACE
+} = process.env;
+
+export async function setupSSHPrivateKey(key: string, name: string) {
+  const sshFolderPath = join(HOME || __dirname, '.ssh');
+  const sshFilePath = join(sshFolderPath, name);
+
+  console.log("HOME", HOME);
+  console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
+
+  await mkdir(sshFolderPath, { recursive: true });
+  await writeFile(sshFilePath, key, {
+    encoding: 'utf8',
+    mode: 0o600
+  });
+  console.log('✅ Ssh key added to `.ssh` dir ', sshFilePath);
+
+  return sshFilePath;
 };
