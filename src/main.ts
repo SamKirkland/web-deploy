@@ -50,41 +50,30 @@ function withDefault(value: string, defaultValue: string) {
  */
 async function syncFiles(args: IActionArguments) {
   try {
-    await group("Uploading files", async () => {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
 
-      const rsyncArguments: string[] = stringArgv(args.rsync_options);
+    const rsyncArguments: string[] = stringArgv(args.rsync_options);
 
-      if (args.source_path !== undefined) {
-        rsyncArguments.push(args.source_path);
-      }
+    if (args.source_path !== undefined) {
+      rsyncArguments.push(args.source_path);
+    }
 
-      rsyncArguments.push(destination);
+    rsyncArguments.push(destination);
 
-      return await exec(
-        "rsync",
-        rsyncArguments,
-        {
-          listeners: {
-            stdout: (data: Buffer) => {
-              console.log("stdout", data);
-            },
-            stderr: (data: Buffer) => {
-              console.error("stderr", data);
-            },
-            stdline: (data: string) => {
-              console.log("stdline", data);
-            },
-            errline: (data: string) => {
-              console.error("errline", data);
-            },
-            debug: (data: string) => {
-              console.info("debug", data);
-            }
-          }
+    return await exec(
+      "rsync",
+      rsyncArguments,
+      {
+        listeners: {
+          stdout: (data: Buffer) => {
+            console.log(data);
+          },
+          stderr: (data: Buffer) => {
+            console.error(data);
+          },
         }
-      );
-    });
+      }
+    );
   }
   catch (error) {
     setFailed(error as any);

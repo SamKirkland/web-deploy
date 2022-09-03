@@ -3462,37 +3462,26 @@ function withDefault(value, defaultValue) {
 }
 async function syncFiles(args) {
   try {
-    await (0, import_core.group)("Uploading files", async () => {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-      const rsyncArguments = (0, import_string_argv.default)(args.rsync_options);
-      if (args.source_path !== void 0) {
-        rsyncArguments.push(args.source_path);
-      }
-      rsyncArguments.push(destination);
-      return await (0, import_exec.exec)(
-        "rsync",
-        rsyncArguments,
-        {
-          listeners: {
-            stdout: (data) => {
-              console.log("stdout", data);
-            },
-            stderr: (data) => {
-              console.error("stderr", data);
-            },
-            stdline: (data) => {
-              console.log("stdline", data);
-            },
-            errline: (data) => {
-              console.error("errline", data);
-            },
-            debug: (data) => {
-              console.info("debug", data);
-            }
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    const rsyncArguments = (0, import_string_argv.default)(args.rsync_options);
+    if (args.source_path !== void 0) {
+      rsyncArguments.push(args.source_path);
+    }
+    rsyncArguments.push(destination);
+    return await (0, import_exec.exec)(
+      "rsync",
+      rsyncArguments,
+      {
+        listeners: {
+          stdout: (data) => {
+            console.log(data);
+          },
+          stderr: (data) => {
+            console.error(data);
           }
         }
-      );
-    });
+      }
+    );
   } catch (error) {
     (0, import_core.setFailed)(error);
   }
