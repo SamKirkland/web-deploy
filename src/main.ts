@@ -55,7 +55,7 @@ export async function syncFiles(privateKeyPath: string, args: IActionArguments) 
   try {
     const rsyncArguments: string[] = [];
 
-    rsyncArguments.push(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`);
+    rsyncArguments.push(...stringArgv(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`));
 
     rsyncArguments.push(...stringArgv(args.rsync_options));
 

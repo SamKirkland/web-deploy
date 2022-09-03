@@ -20,7 +20,8 @@ describe("syncFiles", () => {
     expect(spy).toHaveBeenCalledWith(
       "rsync",
       [
-        "-e 'ssh -p 54321 -i /home/.ssh/web_deploy -o StrictHostKeyChecking=no'",
+        "-e",
+        "ssh -p 54321 -i /home/.ssh/web_deploy -o StrictHostKeyChecking=no",
         "--test",
         "./sourcePath",
         "username@targetserver:/destFolder/subFolder/"
