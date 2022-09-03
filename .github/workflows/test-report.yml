@@ -9,12 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm ci
-      - run: npm test # run tests (configured to use jest-junit reporter)
+      - run: npm test-ci
 
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
+        if: success() || failure()
         with:
-          name: JEST Tests # Name of the check run which will be created
-          path: reports/jest-*.xml # Path to test results
-          reporter: jest-junit # Format of test results
+          name: JEST Tests
+          path: test-report.xml
+          reporter: jest-junit
