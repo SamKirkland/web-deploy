@@ -3,6 +3,7 @@ import { exec } from '@actions/exec';
 import { IActionArguments } from './types';
 import commandExistsSync from "command-exists";
 import stringArgv from 'string-argv';
+import { setupSSHPrivateKey } from "./ssh";
 
 const errorDeploying = "⚠️ Error deploying";
 
@@ -11,6 +12,7 @@ async function run() {
     const userArguments = getUserArguments();
 
     await verifyRsyncInstalled();
+    await setupSSHPrivateKey(userArguments.remote_key, "web-deploy-action");
     await syncFiles(userArguments);
 
     console.log("✅ Deploy Complete");
