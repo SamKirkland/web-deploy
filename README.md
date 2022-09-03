@@ -4,7 +4,7 @@
 
 Automate deploying websites and more with this GitHub action. **It's free!**
 
-![Test web deploy](https://github.com/SamKirkland/web-deploy/workflows/Test%20web%20deploy/badge.svg)
+[![tests](https://github.com/SamKirkland/web-deploy/actions/workflows/test-report.yml/badge.svg)](https://github.com/SamKirkland/web-deploy/actions/workflows/test-report.yml)
 
 ---
 
