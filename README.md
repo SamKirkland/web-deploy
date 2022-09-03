@@ -15,22 +15,19 @@ on: push
 name: Publish Website
 jobs:
   web-deploy:
-    name: 🚀 Deploy website every commit
+    name: 🚀 Deploy Website Every Commit
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
+    - name: 🚚 Get Latest Code
       uses: actions/checkout@v3
     
-    - name: 📂 Sync files
-      uses: SamKirkland/web-deploy@v1.0.0
+    - name: 📂 Sync Files
+      uses: SamKirkland/web-deploy@v1
       with:
-        target-server: samkirkland.com
-        username: myFtpUserName
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        args: 
-        local-dir:
-        server-dir:
-        exclude: 
+        target-server: example.com
+        remote-user: username
+        remote-key: ${{ secrets.SSH_KEY }}
+        destination-path: ~/destinationFolder/
 ```
 
 ---
@@ -60,14 +57,15 @@ Keys can be added directly to your .yml config file or referenced from your proj
 To add a `secret` go to the `Settings` tab in your project then select `Secrets`.
 I strongly recommend you store your `remote-key` as a secret.
 
-| Key Name           | Required? | Example                           | Default                                                                                                                                                                  | Description                                                                                                               |
-|--------------------|-----------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `target-server`    | Yes       | `ftp.samkirkland.com`             |                                                                                                                                                                          | Deployment destination server. Formatted as `domain.com:port`. Port is optional, when not specified it will default to 22 |
-| `remote-user`      | Yes       | `username@samkirkland.com`        |                                                                                                                                                                          | SSH user name                                                                                                             |
-| `remote-key`       | Yes       | `CrazyUniquePassword&%123`        |                                                                                                                                                                          | SSH private key                                                                                                           |
-| `source-path`      | No        | `./myFolderToPublish/`            | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                         |
-| `destination-path` | No        | `ftp.samkirkland.com`             | `./`                                                                                                                                                                     | Folder to upload from, must end with trailing slash `/`                                                                   |
-| `rsync-options`    | No        | See `rsync-options` section below | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore` | Custom rsync arguments, this field is passed through directly into the rsync script                                       |
+| Key Name           | Required? | Example                                  | Default                                                                                                                                                                  | Description                                                                                                                                                        |
+|--------------------|-----------|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `target-server`    | Yes       | `example.com`                            |                                                                                                                                                                          | Destination server to deploy to                                                                                                                                    |
+| `destination-path` | Yes       | `~/folderOnServerThatAlreadyExists/`     |                                                                                                                                                                          | Path on the server to deploy to. Must already exist.                                                                                                               |
+| `remote-user`      | Yes       | `username`                               |                                                                                                                                                                          | SSH user to login as                                                                                                                                               |
+| `private-ssh-key`  | Yes       | `-----BEGIN RSA PRIVATE KEY----- ......` |                                                                                                                                                                          | SSH Private key. Must be specified as a secret.                                                                                                                    |
+| `source-path`      | No        | `./myFolderToPublish/`                   | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                                                                  |
+| `ssh-port`         | No        | `12345`                                  | `22`                                                                                                                                                                     | SSH port to use. Most hosts change this from the default. This is NOT your websites port.                                                                          |
+| `rsync-options`    | No        | See `rsync-options` section below        | `--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore` | Note: If customizing you should re-specify defaults (assuming you want them). Custom rsync arguments, this field is passed through directly into the rsync script. |
 
 #### Advanced options using `rsync-options`
 Custom arguments, this field is passed through directly into the rsync script. See [rsync's manual](https://linux.die.net/man/1/rsync) for all options.
@@ -117,11 +115,12 @@ jobs:
       run: npm run build
     
     - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1.0.0
+      uses: SamKirkland/web-deploy@v1
       with:
-        target-server: samkirkland.com
-        remote-user: myFtpUserName
+        target-server: example.com
+        remote-user: username
         remote-key: ${{ secrets.SSH_KEY }}
+        destination-path: ~/destinationFolder/
 ```
 
 #### Log only dry run: Use this mode for testing
@@ -131,19 +130,21 @@ on: push
 name: Publish Website Dry Run
 jobs:
   web-deploy:
-    name: 🚀 Deploy website every commit
+    name: 🚀 Deploy Website Every Commit
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
+    - name: 🚚 Get Latest Code
       uses: actions/checkout@v3
 
-    - name: 📂 Sync files
-      uses: SamKirkland/web-deploy@v1.0.0
+    - name: 📂 Sync Files
+      uses: SamKirkland/web-deploy@v1
       with:
-        ftp-server: samkirkland.com
-        ftp-username: myFTPUsername
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        git-ftp-args: --dry-run
+        target-server: example.com
+        remote-user: username
+        remote-key: ${{ secrets.SSH_KEY }}
+        ssh-port: 22
+        destination-path: ~/destinationFolder/
+        rsync-options: --dry-run --archive --verbose --compress --delete-after --human-readable --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore
 ```
 
 _Want another example? Let me know by creating a [github issue](https://github.com/SamKirkland/web-deploy/issues/new)_

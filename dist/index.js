@@ -3438,7 +3438,7 @@ async function run() {
   try {
     const userArguments = getUserArguments();
     await verifyRsyncInstalled();
-    const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
+    const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
     await syncFiles(privateKeyPath, userArguments);
     console.log("\u2705 Deploy Complete");
   } catch (error) {
@@ -3452,7 +3452,7 @@ function getUserArguments() {
     target_server: (0, import_core.getInput)("target-server", { required: true }),
     destination_path: withDefault((0, import_core.getInput)("destination-path", { required: false }), "./"),
     remote_user: (0, import_core.getInput)("remote-user", { required: true }),
-    remote_key: (0, import_core.getInput)("remote-key", { required: true }),
+    private_ssh_key: (0, import_core.getInput)("private-ssh-key", { required: true }),
     source_path: withDefault((0, import_core.getInput)("source-path", { required: false }), "./"),
     ssh_port: withDefault((0, import_core.getInput)("ssh-port"), "22"),
     rsync_options: withDefault((0, import_core.getInput)("rsync-options"), default_rsync_options)

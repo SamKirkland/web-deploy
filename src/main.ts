@@ -15,7 +15,7 @@ async function run() {
     const userArguments = getUserArguments();
 
     await verifyRsyncInstalled();
-    const privateKeyPath = await setupSSHPrivateKey(userArguments.remote_key);
+    const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
     await syncFiles(privateKeyPath, userArguments);
 
     console.log("✅ Deploy Complete");
@@ -33,7 +33,7 @@ function getUserArguments(): IActionArguments {
     target_server: getInput("target-server", { required: true }),
     destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
     remote_user: getInput("remote-user", { required: true }),
-    remote_key: getInput("remote-key", { required: true }),
+    private_ssh_key: getInput("private-ssh-key", { required: true }),
     source_path: withDefault(getInput("source-path", { required: false }), "./"),
     ssh_port: withDefault(getInput("ssh-port"), "22"),
     rsync_options: withDefault(getInput("rsync-options"), default_rsync_options)

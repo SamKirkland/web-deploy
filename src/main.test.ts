@@ -12,7 +12,7 @@ describe("syncFiles", () => {
       source_path: "./sourcePath",
       destination_path: "/destFolder/subFolder/",
       remote_user: "username",
-      remote_key: "keyname",
+      private_ssh_key: "keyname",
       ssh_port: "54321",
       rsync_options: "--test",
     });
