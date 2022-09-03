@@ -3475,19 +3475,19 @@ async function syncFiles(args) {
         {
           listeners: {
             stdout: (data) => {
-              console.log(data);
+              console.log("stdout", data);
             },
             stderr: (data) => {
-              console.error(data);
+              console.error("stderr", data);
             },
             stdline: (data) => {
-              console.log(data);
+              console.log("stdline", data);
             },
             errline: (data) => {
-              console.error(data);
+              console.error("errline", data);
             },
             debug: (data) => {
-              console.info(data);
+              console.info("debug", data);
             }
           }
         }
