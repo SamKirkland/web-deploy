@@ -3,7 +3,7 @@ import { exec } from '@actions/exec';
 import { IActionArguments } from './types';
 import commandExistsSync from "command-exists";
 import stringArgv from 'string-argv';
-import { writeFile, mkdir } from "fs/promises";
+import { promises } from "fs";
 import { join } from "path";
 
 const errorDeploying = "⚠️ Error deploying";
@@ -115,8 +115,8 @@ export async function setupSSHPrivateKey(key: string, name: string) {
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
 
-  await mkdir(sshFolderPath, { recursive: true });
-  await writeFile(sshFilePath, key, {
+  await promises.mkdir(sshFolderPath, { recursive: true });
+  await promises.writeFile(sshFilePath, key, {
     encoding: 'utf8',
     mode: 0o600
   });

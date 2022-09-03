@@ -1764,7 +1764,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = require("os");
     var fs_1 = require("fs");
-    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
+    var { access, appendFile, writeFile } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1800,7 +1800,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile2 : appendFile;
+          const writeFunc = overwrite ? writeFile : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -3428,7 +3428,7 @@ var import_core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
 var import_command_exists = __toESM(require_command_exists2());
 var import_string_argv = __toESM(require_string_argv());
-var import_promises = require("fs/promises");
+var import_fs = require("fs");
 var import_path = require("path");
 var errorDeploying = "\u26A0\uFE0F Error deploying";
 async function run() {
@@ -3514,8 +3514,8 @@ async function setupSSHPrivateKey(key, name) {
   const sshFilePath = (0, import_path.join)(sshFolderPath, name);
   console.log("HOME", HOME);
   console.log("GITHUB_WORKSPACE", GITHUB_WORKSPACE);
-  await (0, import_promises.mkdir)(sshFolderPath, { recursive: true });
-  await (0, import_promises.writeFile)(sshFilePath, key, {
+  await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
+  await import_fs.promises.writeFile(sshFilePath, key, {
     encoding: "utf8",
     mode: 384
   });
