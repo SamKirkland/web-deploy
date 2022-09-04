@@ -26,7 +26,7 @@ jobs:
       with:
         target-server: example.com
         remote-user: username
-        remote-key: ${{ secrets.SSH_KEY }}
+        private-ssh-key: ${{ secrets.SSH_KEY }}
         destination-path: ~/destinationFolder/
 ```
 
@@ -55,7 +55,7 @@ jobs:
 Keys can be added directly to your .yml config file or referenced from your project `Secrets` storage.
 
 To add a `secret` go to the `Settings` tab in your project then select `Secrets`.
-I strongly recommend you store your `remote-key` as a secret.
+I strongly recommend you store your `private-ssh-key` as a secret.
 
 | Key Name           | Required? | Example                                  | Default                                                                                                                                                                  | Description                                                                                                                                                        |
 |--------------------|-----------|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -119,7 +119,7 @@ jobs:
       with:
         target-server: example.com
         remote-user: username
-        remote-key: ${{ secrets.SSH_KEY }}
+        private-ssh-key: ${{ secrets.SSH_KEY }}
         destination-path: ~/destinationFolder/
 ```
 
@@ -141,7 +141,7 @@ jobs:
       with:
         target-server: example.com
         remote-user: username
-        remote-key: ${{ secrets.SSH_KEY }}
+        private-ssh-key: ${{ secrets.SSH_KEY }}
         ssh-port: 22
         destination-path: ~/destinationFolder/
         rsync-options: --dry-run --archive --verbose --compress --delete-after --human-readable --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore

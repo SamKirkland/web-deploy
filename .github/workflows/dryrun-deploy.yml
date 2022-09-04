@@ -14,7 +14,7 @@ jobs:
         with:
           target-server: mi3-sr24.supercp.com
           remote-user: samkirkland
-          remote-key: ${{ secrets.SSH_KEY }}
+          private-ssh-key: ${{ secrets.SSH_KEY }}
           ssh-port: 7822
           destination-path: ~/
           rsync-options: --dry-run --archive --verbose --compress --delete-after --human-readable --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore
