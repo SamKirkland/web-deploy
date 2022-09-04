@@ -1,4 +1,4 @@
-name: "web deploy"
+name: "web deploy anything"
 description: "Deploy websites via sftp/ssh/rsync"
 author: "Sam Kirkland"
 inputs:
@@ -26,7 +26,7 @@ inputs:
     default: "--archive --verbose --compress --human-readable --progress --delete-after --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore"
     required: false
 runs:
-  using: "node12"
+  using: "node16"
   main: "dist/index.js"
 branding:
   icon: "upload-cloud"

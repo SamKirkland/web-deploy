@@ -151,6 +151,48 @@ _Want another example? Let me know by creating a [github issue](https://github.c
 
 ---
 
+## Badge
+
+If you appreciate this github action give it a :star: or show off with one of the badges below. Feel free to edit the text or color.
+
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=0077b6">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=0077b6">](https://github.com/SamKirkland/web-deploy)
+```
+
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=2b9348">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=2b9348">](https://github.com/SamKirkland/web-deploy)
+```
+
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=d00000">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Deployed with web deploy" src="https://img.shields.io/badge/Deployed With-web deploy-%3CCOLOR%3E?style=for-the-badge&color=d00000">](https://github.com/SamKirkland/web-deploy)
+```
+
+---
+
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=297FA9">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=297FA9">](https://github.com/SamKirkland/web-deploy)
+```
+
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=2b9348">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=2b9348">](https://github.com/SamKirkland/web-deploy)
+```
+
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=d00000">](https://github.com/SamKirkland/web-deploy)
+
+```md
+[<img alt="Website Deployed for Free with web deploy" src="https://img.shields.io/badge/Website deployed for free with-web deploy-%3CCOLOR%3E?style=for-the-badge&color=d00000">](https://github.com/SamKirkland/web-deploy)
+```
+
 ## FAQ
 <details>
   <summary>How to exclude .git files from the publish</summary>
