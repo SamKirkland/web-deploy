@@ -46,7 +46,7 @@ jobs:
 2. Select the `Actions` tab
 3. Select `Blank workflow file` or `Set up a workflow yourself`, if you don't see these options manually create a yaml file `Your_Project/.github/workflows/main.yml`
 4. Paste the example above into your yaml file and save
-5. Now you need to add a key to the `secrets` section in your project. To add a `secret` go to the `Settings` tab in your project then select `Secrets`. Add a new `Secret` for `ftp-password`
+5. Now you need to add a key to the `secrets` section in your project. To add a `secret` go to the `Settings` tab in your project then select `Secrets`. Add a new `Secret` for `private-ssh-key`
 6. Update your yaml file settings
 
 ---
